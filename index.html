@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix Error by Action</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #dbeafe, #eff6ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 700px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            color: #3b82f6;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 120px;
+            resize: vertical;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #93c5fd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: block;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: #2563eb;
+        }
+        
+        .output {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background: #f0f9ff;
+            border-left: 5px solid #3b82f6;
+            padding: 15px;
+            border-radius: 10px;
+            color: #1e3a8a;
+            font-size: 15px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .footer span {
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Fix Error by Action</h1>
+        <textarea id="errorInput" placeholder="ใส่ error ภาษา Pawn ของคุณที่นี่..."></textarea>
+        <button onclick="analyzeError()">วิเคราะห์และแนะนำวิธีแก้</button>
+        <div id="output" class="output"></div>
+        <div class="footer">
+            <p><span>Fix Error By Action</span> - ระบบบอกวิธีแก้ error ด้วย AI</p>
+            <p>การประมวลผลอาจผิดพลาดเนื่องจากประมวลผลด้วย AI</p>
+        </div>
+    </div>
+
+    <script>
+        async function analyzeError() {
+            const input = document.getElementById("errorInput").value.trim();
+            const output = document.getElementById("output");
+
+            if (!input) {
+                output.textContent = "กรุณาใส่ข้อความ error ก่อน";
+                return;
+            }
+
+            output.textContent = "กำลังประมวลผลด้วย AI... กรุณารอสักครู่";
+
+            try {
+                const res = await fetch(
+                    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyB-oxeYLwjVY5hu7aMZKWCGNSGQsr5A9XQ", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{
+                                    text: `ฉันกำลังเขียนโค้ดภาษา Pawn แล้วพบ error ต่อไปนี้:\n${input}\nช่วยบอกวิธีแก้ไขแบบละเอียดด้วยนะ`
+                                }]
+                            }]
+                        })
+                    }
+                );
+
+                const data = await res.json();
+
+                if (data && data.candidates && data.candidates.length > 0) {
+                    output.textContent = data.candidates[0].content.parts[0].text;
+                } else {
+                    output.textContent = "ไม่สามารถประมวลผลคำตอบได้ กรุณาลองใหม่อีกครั้ง.";
+                }
+            } catch (err) {
+                console.error(err);
+                output.textContent = "เกิดข้อผิดพลาดในการเชื่อมต่อ API หรือระบบไม่ตอบสนอง.";
+            }
+        }
+    </script>
+</body>
+
+</html>
